@@ -360,6 +360,31 @@
   tbody tr { animation: rowFade .3s ease; }
   @keyframes rowFade { from{opacity:0} to{opacity:1} }
 </style>
+
+<! ---- DB Connection details-->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://cprijhytfdoumkqpenss.supabase.co',
+    'sb_publishable_iLs3GIfESeHO-K1JXNZLOw_mXa65eja'   // from Supabase → Settings → API
+  );
+
+  // Example: load all students
+  async function loadStudents() {
+    const { data, error } = await sb.from('students').select('*');
+    if (error) return console.error(error);
+    renderStudentsTable(data);
+  }
+
+  // Example: add a student
+  async function saveStudent(formData) {
+    const { error } = await sb.from('students').insert([formData]);
+    if (error) showToast('Error: ' + error.message, 'error');
+    else showToast('Student saved!', 'success');
+  }
+</script>
 </head>
 <body>
 
