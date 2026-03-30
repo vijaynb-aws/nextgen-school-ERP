@@ -8,7 +8,7 @@
  */
 
 import DB   from './db.service.js';
-import { showToast, formatDate, formatCurrency, registerPageLoader } from '../ui.js';
+import { showToast, formatDate, formatCurrency, registerPageLoader } from './ui.js';
 
 /* ── LOAD ACCOUNT STATEMENT ───────────────────────────────── */
 async function loadAccountStatement() {

@@ -8,7 +8,7 @@
  */
 
 import DB   from './db.service.js';
-import { showToast, formatDate, getInitials, getAvatarStyle, registerPageLoader } from '../ui.js';
+import { showToast, formatDate, getInitials, getAvatarStyle, registerPageLoader } from './ui.js';
 import APP_CONFIG from '../config/app.config.js';
 
 /* ── LOAD ALL EMPLOYEES ───────────────────────────────────── */
