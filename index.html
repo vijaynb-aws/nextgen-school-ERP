@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduCore — School Management System</title>
+  <meta name="description" content="EduCore School Management System">
+
+  <!-- ── STYLESHEETS (split CSS files) ───────────────────── -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- ── SUPABASE JS SDK (loaded only if using Supabase) ──── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     SIDEBAR NAVIGATION
+     ════════════════════════════════════════════════════════ -->
+<nav class="sidebar" id="sidebar">
+
+  <div class="sidebar-logo">
+    <div class="logo-icon">🎓</div>
+    <div class="logo-text">Edu<span>Core</span></div>
+  </div>
+
+  <div class="sidebar-nav">
+
+    <!-- Overview -->
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="navigate('dashboard', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+
+    <!-- Settings -->
+    <div class="nav-section-label">Configuration</div>
+    <div class="nav-item" onclick="toggleSub('settings-sub')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      General Settings
+      <svg class="nav-expand" id="settings-sub-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="sub-nav" id="settings-sub">
+      <div class="sub-nav-item" onclick="navigate('inst-profile', this)">Institute Profile</div>
+      <div class="sub-nav-item" onclick="navigate('fees-particulars', this)">Fees Particulars</div>
+      <div class="sub-nav-item" onclick="navigate('fees-structure', this)">Fees Structure</div>
+      <div class="sub-nav-item" onclick="navigate('discount-type', this)">Discount Type</div>
+      <div class="sub-nav-item" onclick="navigate('rules', this)">Rules &amp; Regulations</div>
+      <div class="sub-nav-item" onclick="navigate('marks-grading', this)">Marks Grading</div>
+      <div class="sub-nav-item" onclick="navigate('theme-lang', this)">Theme &amp; Language</div>
+      <div class="sub-nav-item" onclick="navigate('account-settings', this)">Account Settings</div>
+    </div>
+
+    <!-- Academics -->
+    <div class="nav-section-label">Academics</div>
+    <div class="nav-item" onclick="toggleSub('classes-sub')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M4 20V10l8-7 8 7v10"/></svg>
+      Classes
+      <svg class="nav-expand" id="classes-sub-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="sub-nav" id="classes-sub">
+      <div class="sub-nav-item" onclick="navigate('all-classes', this)">All Classes</div>
+      <div class="sub-nav-item" onclick="navigate('new-class', this)">New Class</div>
+    </div>
+
+    <div class="nav-item" onclick="toggleSub('subject-sub')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      Subjects
+      <svg class="nav-expand" id="subject-sub-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="sub-nav" id="subject-sub">
+      <div class="sub-nav-item" onclick="navigate('classes-subjects', this)">Classes with Subjects</div>
+      <div class="sub-nav-item" onclick="navigate('assign-subject', this)">Assign Subject</div>
+    </div>
+
+    <!-- People -->
+    <div class="nav-section-label">People</div>
+    <div class="nav-item" onclick="toggleSub('students-sub')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Students
+      <span class="nav-badge" id="nav-students-badge">0</span>
+      <svg class="nav-expand" id="students-sub-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="sub-nav" id="students-sub">
+      <div class="sub-nav-item" onclick="navigate('all-students', this)">All Students</div>
+      <div class="sub-nav-item" onclick="navigate('add-student', this)">Add New Student</div>
+      <div class="sub-nav-item" onclick="navigate('admission-letter', this)">Admission Letter</div>
+      <div class="sub-nav-item" onclick="navigate('student-id', this)">Student ID Cards</div>
+      <div class="sub-nav-item" onclick="navigate('promote-students', this)">Promote Students</div>
+    </div>
+
+    <div class="nav-item" onclick="toggleSub('emp-sub')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Employees
+      <svg class="nav-expand" id="emp-sub-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="sub-nav" id="emp-sub">
+      <div class="sub-nav-item" onclick="navigate('all-employees', this)">All Employees</div>
+      <div class="sub-nav-item" onclick="navigate('add-employee', this)">Add New Employee</div>
+      <div class="sub-nav-item" onclick="navigate('staff-id', this)">Staff ID Cards</div>
+      <div class="sub-nav-item" onclick="navigate('job-letter', this)">Job Letter</div>
+    </div>
+
+    <!-- Finance -->
+    <div class="nav-section-label">Finance</div>
+    <div class="nav-item" onclick="toggleSub('accounts-sub')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      Accounts
+      <svg class="nav-expand" id="accounts-sub-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="sub-nav" id="accounts-sub">
+      <div class="sub-nav-item" onclick="navigate('chart-accounts', this)">Chart of Accounts</div>
+      <div class="sub-nav-item" onclick="navigate('add-income', this)">Add Income</div>
+      <div class="sub-nav-item" onclick="navigate('add-expense', this)">Add Expense</div>
+      <div class="sub-nav-item" onclick="navigate('account-statement', this)">Account Statement</div>
+    </div>
+
+  </div><!-- /sidebar-nav -->
+
+  <div class="sidebar-user">
+    <div class="user-avatar">A</div>
+    <div class="user-info">
+      <div class="user-name" data-school-name>Admin</div>
+      <div class="user-role">Super Administrator</div>
+    </div>
+    <svg style="width:16px;height:16px;color:var(--text3);cursor:pointer;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="showToast('Logging out...','info')"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+  </div>
+
+</nav>
+
+
+<!-- ════════════════════════════════════════════════════════
+     MAIN CONTENT AREA
+     ════════════════════════════════════════════════════════ -->
+<div class="main-wrapper">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="topbar-btn" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Toggle sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topbar-breadcrumb" id="breadcrumb"><strong>Dashboard</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-search" role="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search... <kbd style="margin-left:auto;font-size:10px;color:var(--text3);border:1px solid var(--border);border-radius:4px;padding:1px 5px">⌘K</kbd>
+    </div>
+    <div class="topbar-btn" onclick="showToast('No new notifications','info')" aria-label="Notifications">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-dot"></span>
+    </div>
+    <div class="topbar-btn" onclick="navigate('account-settings')" aria-label="Settings">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="page-content" id="pageContent">
+
+    <!-- ════════ DASHBOARD ════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Welcome back, Admin 👋</div>
+      <div class="page-sub">Here's what's happening at your school today.</div>
+
+      <div class="stats-grid">
+        <div class="stat-card" onclick="navigate('all-students')">
+          <div class="stat-icon bg-blue">👨‍🎓</div>
+          <div class="stat-num c-blue" id="stat-students">—</div>
+          <div class="stat-label">Total Students</div>
+          <div class="stat-trend up">↑ Loading...</div>
+        </div>
+        <div class="stat-card" onclick="navigate('all-employees')">
+          <div class="stat-icon bg-green">👩‍🏫</div>
+          <div class="stat-num c-green" id="stat-employees">—</div>
+          <div class="stat-label">Employees</div>
+        </div>
+        <div class="stat-card" onclick="navigate('all-classes')">
+          <div class="stat-icon bg-purple">🏫</div>
+          <div class="stat-num c-purple" id="stat-classes">—</div>
+          <div class="stat-label">Classes</div>
+        </div>
+        <div class="stat-card" onclick="navigate('add-income')">
+          <div class="stat-icon bg-yellow">💰</div>
+          <div class="stat-num c-yellow" id="stat-income">—</div>
+          <div class="stat-label">Monthly Revenue</div>
+        </div>
+        <div class="stat-card" onclick="navigate('add-expense')">
+          <div class="stat-icon bg-red">📊</div>
+          <div class="stat-num c-red" id="stat-expense">—</div>
+          <div class="stat-label">Monthly Expense</div>
+        </div>
+      </div>
+
+      <div class="quick-grid">
+        <div class="quick-card" onclick="navigate('add-student')"><div class="qi">➕</div><div class="ql">Add Student</div></div>
+        <div class="quick-card" onclick="navigate('add-employee')"><div class="qi">👤</div><div class="ql">Add Employee</div></div>
+        <div class="quick-card" onclick="navigate('add-income')"><div class="qi">💵</div><div class="ql">Add Income</div></div>
+        <div class="quick-card" onclick="navigate('add-expense')"><div class="qi">📉</div><div class="ql">Add Expense</div></div>
+        <div class="quick-card" onclick="navigate('student-id')"><div class="qi">🪪</div><div class="ql">ID Cards</div></div>
+        <div class="quick-card" onclick="navigate('promote-students')"><div class="qi">🎓</div><div class="ql">Promote</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;flex-wrap:wrap">
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Monthly Fee Collection
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:6px;height:160px;padding-top:12px" id="barChart"></div>
+          <div style="display:flex;gap:20px;margin-top:10px;font-size:11px;color:var(--text2)" id="chart-labels">
+            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Class Strength</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Class X</span><span class="c-blue">28/35</span></div><div class="progress-bar"><div class="progress-fill" style="width:80%;background:var(--accent)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Class IX</span><span class="c-green">32/35</span></div><div class="progress-bar"><div class="progress-fill" style="width:91%;background:var(--accent3)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Class VIII</span><span class="c-purple">25/35</span></div><div class="progress-bar"><div class="progress-fill" style="width:71%;background:var(--accent2)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Class VII</span><span class="c-yellow">30/35</span></div><div class="progress-bar"><div class="progress-fill" style="width:86%;background:var(--warning)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Class VI</span><span class="c-red">27/35</span></div><div class="progress-bar"><div class="progress-fill" style="width:77%;background:var(--danger)"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="card-title">Recent Admissions</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>Class</th><th>Admission Date</th><th>Status</th></tr></thead>
+            <tbody id="recent-admissions-tbody">
+              <tr><td colspan="4" style="text-align:center;color:var(--text3)">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /dashboard -->
+
+
+    <!-- ════════ INSTITUTE PROFILE ════════ -->
+    <div class="page" id="page-inst-profile">
+      <div class="page-title">Institute Profile</div>
+      <div class="page-sub">Configure your school's public-facing information.</div>
+      <div class="card">
+        <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:24px">
+          <div>
+            <div style="width:80px;height:80px;background:var(--surface2);border-radius:var(--radius);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer" onclick="showToast('Upload logo','info')" title="Click to upload logo">🏫</div>
+            <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:6px">Click to upload</div>
+          </div>
+          <div style="flex:1;min-width:240px">
+            <div class="form-grid">
+              <div class="form-group full"><div class="form-label">Name of the Institute</div><input class="form-input" name="school_name" placeholder="e.g. Sunshine Public School" value="Sunshine Public School"></div>
+              <div class="form-group full"><div class="form-label">Tagline</div><input class="form-input" name="tagline" placeholder="School tagline..." value="Shaping Tomorrow's Leaders"></div>
+              <div class="form-group"><div class="form-label">Phone Number</div><input class="form-input" type="tel" name="phone" value="+91 98765 43210"></div>
+              <div class="form-group"><div class="form-label">Website</div><input class="form-input" type="url" name="website" value="https://sunshineschool.edu"></div>
+              <div class="form-group full"><div class="form-label">Address</div><textarea class="form-textarea" name="address">123, Education Lane, Near City Park</textarea></div>
+              <div class="form-group"><div class="form-label">District / County</div><input class="form-input" name="district" value="Bengaluru Urban"></div>
+              <div class="form-group"><div class="form-label">State</div><input class="form-input" name="state" value="Karnataka"></div>
+              <div class="form-group"><div class="form-label">Country</div><select class="form-select"><option selected>India</option><option>USA</option><option>UK</option></select></div>
+              <div class="form-group"><div class="form-label">Pin Code</div><input class="form-input" name="pin_code" value="560001"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="showToast('Institute profile saved!','success')">💾 Save Profile</button>
+          <button class="btn btn-outline">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ════════ FEES PARTICULARS ════════ -->
+    <div class="page" id="page-fees-particulars">
+      <div class="page-title">Fees Particulars</div>
+      <div class="page-sub">Define individual fee components.</div>
+      <div class="card">
+        <div class="table-controls">
+          <div class="table-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search..." oninput="filterTable(this,'fees-p-tbody')"></div>
+          <button class="btn btn-primary" onclick="openModal('modal-add-fee')">+ Add Particular</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>#</th><th>Name</th><th>Type</th><th>Amount</th><th>Action</th></tr></thead>
+          <tbody id="fees-p-tbody">
+            <tr><td>1</td><td><strong>Tuition Fee</strong></td><td><span class="badge badge-blue">Monthly</span></td><td>₹2,500</td><td><button class="btn btn-outline btn-sm">Edit</button></td></tr>
+            <tr><td>2</td><td><strong>Library Fee</strong></td><td><span class="badge badge-green">Annual</span></td><td>₹1,000</td><td><button class="btn btn-outline btn-sm">Edit</button></td></tr>
+            <tr><td>3</td><td><strong>Sports Fee</strong></td><td><span class="badge badge-purple">Annual</span></td><td>₹800</td><td><button class="btn btn-outline btn-sm">Edit</button></td></tr>
+            <tr><td>4</td><td><strong>Exam Fee</strong></td><td><span class="badge badge-yellow">Term</span></td><td>₹500</td><td><button class="btn btn-outline btn-sm">Edit</button></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ════════ FEES STRUCTURE ════════ -->
+    <div class="page" id="page-fees-structure">
+      <div class="page-title">Fees Structure</div>
+      <div class="page-sub">Map fee components to each class.</div>
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab(this,'fs-t1')">Class VI–VIII</div>
+          <div class="tab" onclick="switchTab(this,'fs-t2')">Class IX–X</div>
+          <div class="tab" onclick="switchTab(this,'fs-t3')">Class XI–XII</div>
+        </div>
+        <div class="tab-panel active" id="fs-t1">
+          <div class="table-wrap"><table><thead><tr><th>Particular</th><th>Frequency</th><th>Class VI</th><th>Class VII</th><th>Class VIII</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Tuition Fee</strong></td><td>Monthly</td><td>₹2,000</td><td>₹2,200</td><td>₹2,400</td></tr>
+            <tr><td><strong>Library Fee</strong></td><td>Annual</td><td>₹800</td><td>₹800</td><td>₹1,000</td></tr>
+            <tr><td><strong>Sports Fee</strong></td><td>Annual</td><td>₹600</td><td>₹700</td><td>₹800</td></tr>
+          </tbody>
+        </table>
+      </div>
+        </div>
+        <div class="tab-panel" id="fs-t2"><p style="color:var(--text2);padding:20px 0">Class IX–X fee structure.</p></div>
+        <div class="tab-panel" id="fs-t3"><p style="color:var(--text2);padding:20px 0">Class XI–XII fee structure.</p></div>
+        <div style="margin-top:16px"><button class="btn btn-primary" onclick="showToast('Structure saved!','success')">💾 Save</button></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ DISCOUNT TYPE ════════ -->
+    <div class="page" id="page-discount-type">
+      <div class="page-title">Discount Types</div>
+      <div class="page-sub">Configure fee concession categories.</div>
+      <div class="card">
+        <div class="table-controls">
+          <div class="table-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search..."></div>
+          <button class="btn btn-primary" onclick="showToast('Add discount','info')">+ Add Discount</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Name</th><th>Discount %</th><th>Applicable On</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><strong>Sibling Discount</strong></td><td>10%</td><td>Tuition Fee</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>2</td><td><strong>Merit Scholarship</strong></td><td>25%</td><td>All Fees</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>3</td><td><strong>Staff Ward</strong></td><td>50%</td><td>Tuition Fee</td><td><span class="badge badge-blue">Active</span></td></tr>
+          <tr><td>4</td><td><strong>BPL Category</strong></td><td>100%</td><td>All Fees</td><td><span class="badge badge-yellow">Review</span></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ RULES ════════ -->
+    <div class="page" id="page-rules">
+      <div class="page-title">Rules &amp; Regulations</div>
+      <div class="page-sub">Define school policies for students and staff.</div>
+      <div class="card">
+        <div class="form-group" style="margin-bottom:16px">
+          <div class="form-label">Student Rules</div>
+          <textarea class="form-textarea" style="min-height:130px">1. Students must wear proper uniform daily.
+2. Attendance must be above 75% for examinations.
+3. Mobile phones are prohibited inside classrooms.
+4. Students must maintain campus cleanliness.
+5. Ragging of any form is a punishable offense.</textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <div class="form-label">Employee Rules</div>
+          <textarea class="form-textarea" style="min-height:110px">1. Staff must be punctual and professional.
+2. Leave must be applied 48 hours in advance.
+3. Academic records must be maintained accurately.</textarea>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Rules saved!','success')">💾 Save Rules</button>
+      </div>
+    </div>
+
+
+    <!-- ════════ MARKS GRADING ════════ -->
+    <div class="page" id="page-marks-grading">
+      <div class="page-title">Marks Grading</div>
+      <div class="page-sub">Set academic performance grading scales.</div>
+      <div class="card">
+        <button class="btn btn-primary" style="margin-bottom:16px" onclick="showToast('Add grade row','info')">+ Add Grade</button>
+        <div class="table-wrap"><table><thead><tr><th>Grade</th><th>Min Marks</th><th>Max Marks</th><th>Remarks</th></tr></thead>
+        <tbody>
+          <tr><td><strong class="c-green">A+</strong></td><td>90</td><td>100</td><td>Outstanding</td></tr>
+          <tr><td><strong class="c-green">A</strong></td><td>80</td><td>89</td><td>Excellent</td></tr>
+          <tr><td><strong class="c-blue">B+</strong></td><td>70</td><td>79</td><td>Very Good</td></tr>
+          <tr><td><strong class="c-blue">B</strong></td><td>60</td><td>69</td><td>Good</td></tr>
+          <tr><td><strong class="c-yellow">C</strong></td><td>50</td><td>59</td><td>Average</td></tr>
+          <tr><td><strong class="c-red">D</strong></td><td>35</td><td>49</td><td>Below Average</td></tr>
+          <tr><td><strong class="c-red">F</strong></td><td>0</td><td>34</td><td>Fail</td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ THEME & LANGUAGE ════════ -->
+    <div class="page" id="page-theme-lang">
+      <div class="page-title">Theme &amp; Language</div>
+      <div class="page-sub">Customise your portal's look and feel.</div>
+      <div class="card">
+        <div class="card-title">Color Theme</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onclick="showToast('Dark Blue applied','success')">
+            <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#4f8ef7,#7c5cbf);border:3px solid var(--accent)"></div>
+            <span style="font-size:11px;color:var(--accent)">Dark Blue ✓</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onclick="showToast('Ocean theme applied','success')">
+            <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#06b6d4,#0891b2)"></div>
+            <span style="font-size:11px;color:var(--text2)">Ocean</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onclick="showToast('Forest theme applied','success')">
+            <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#2ec9a5,#059669)"></div>
+            <span style="font-size:11px;color:var(--text2)">Forest</span>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="form-grid">
+          <div class="form-group"><div class="form-label">Language</div><select class="form-select"><option>English</option><option>Hindi</option><option>Kannada</option><option>Tamil</option></select></div>
+          <div class="form-group"><div class="form-label">Date Format</div><select class="form-select"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option></select></div>
+        </div>
+        <div style="margin-top:16px"><button class="btn btn-primary" onclick="showToast('Preferences saved!','success')">💾 Save</button></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ACCOUNT SETTINGS ════════ -->
+    <div class="page" id="page-account-settings">
+      <div class="page-title">Account Settings</div>
+      <div class="page-sub">Manage admin credentials and security.</div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="form-group"><div class="form-label">Full Name</div><input class="form-input" value="School Administrator"></div>
+          <div class="form-group"><div class="form-label">Email</div><input class="form-input" type="email" value="admin@sunshineschool.edu"></div>
+          <div class="form-group"><div class="form-label">Current Password</div><input class="form-input" type="password" placeholder="••••••••"></div>
+          <div class="form-group"><div class="form-label">New Password</div><input class="form-input" type="password" placeholder="••••••••"></div>
+          <div class="form-group"><div class="form-label">Confirm Password</div><input class="form-input" type="password" placeholder="••••••••"></div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="showToast('Account updated!','success')">💾 Update</button>
+          <button class="btn btn-outline">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ALL CLASSES ════════ -->
+    <div class="page" id="page-all-classes">
+      <div class="page-title">All Classes</div>
+      <div class="page-sub">Manage classes and sections.</div>
+      <div class="card">
+        <div class="table-controls">
+          <div class="table-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search classes..."></div>
+          <button class="btn btn-primary" onclick="navigate('new-class')">+ New Class</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Class</th><th>Section</th><th>Teacher</th><th>Students</th><th>Monthly Fees</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Class VI</strong></td><td>A, B</td><td>Mrs. Sunita Rao</td><td>56</td><td>₹2,000</td><td><button class="btn btn-outline btn-sm" onclick="showToast('Class details','info')">View</button></td></tr>
+          <tr><td><strong>Class VII</strong></td><td>A, B</td><td>Mr. Rajesh Kumar</td><td>58</td><td>₹2,200</td><td><button class="btn btn-outline btn-sm" onclick="showToast('Class details','info')">View</button></td></tr>
+          <tr><td><strong>Class VIII</strong></td><td>A, B</td><td>Mrs. Priya Sharma</td><td>54</td><td>₹2,400</td><td><button class="btn btn-outline btn-sm" onclick="showToast('Class details','info')">View</button></td></tr>
+          <tr><td><strong>Class IX</strong></td><td>A, B</td><td>Mr. Anil Verma</td><td>60</td><td>₹2,800</td><td><button class="btn btn-outline btn-sm" onclick="showToast('Class details','info')">View</button></td></tr>
+          <tr><td><strong>Class X</strong></td><td>A, B</td><td>Mrs. Lakshmi Iyer</td><td>62</td><td>₹3,000</td><td><button class="btn btn-outline btn-sm" onclick="showToast('Class details','info')">View</button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ NEW CLASS ════════ -->
+    <div class="page" id="page-new-class">
+      <div class="page-title">Add New Class</div>
+      <div class="page-sub">Create a class with teacher and fee assignment.</div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="form-group"><div class="form-label">Class Name</div><input class="form-input" placeholder="e.g. Class XI"></div>
+          <div class="form-group"><div class="form-label">Section</div><input class="form-input" placeholder="e.g. A, B"></div>
+          <div class="form-group"><div class="form-label">Monthly Tuition Fees (₹)</div><input class="form-input" type="number" placeholder="3500"></div>
+          <div class="form-group"><div class="form-label">Class Teacher</div><select class="form-select"><option>Select Teacher</option><option>Mrs. Sunita Rao</option><option>Mr. Rajesh Kumar</option><option>Mrs. Priya Sharma</option></select></div>
+          <div class="form-group"><div class="form-label">Max Students</div><input class="form-input" type="number" placeholder="35"></div>
+          <div class="form-group"><div class="form-label">Room Number</div><input class="form-input" placeholder="e.g. Room 11"></div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="showToast('Class created!','success')">✅ Create Class</button>
+          <button class="btn btn-outline" onclick="navigate('all-classes')">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ════════ CLASSES WITH SUBJECTS ════════ -->
+    <div class="page" id="page-classes-subjects">
+      <div class="page-title">Classes with Subjects</div>
+      <div class="page-sub">View subjects assigned to each class.</div>
+      <div class="card">
+        <div class="table-wrap"><table><thead><tr><th>Class</th><th>Subjects</th><th>Count</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Class VI</strong></td><td>Mathematics, Science, English, Hindi, Social Studies, Computer</td><td>6</td></tr>
+          <tr><td><strong>Class VII</strong></td><td>Mathematics, Science, English, Hindi, Social Studies, Computer, Art</td><td>7</td></tr>
+          <tr><td><strong>Class VIII</strong></td><td>Mathematics, Science, English, Hindi, History, Geography, Computer</td><td>7</td></tr>
+          <tr><td><strong>Class IX</strong></td><td>Mathematics, Physics, Chemistry, Biology, English, Hindi, History</td><td>7</td></tr>
+          <tr><td><strong>Class X</strong></td><td>Mathematics, Physics, Chemistry, Biology, English, Hindi, History, Geography</td><td>8</td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ASSIGN SUBJECT ════════ -->
+    <div class="page" id="page-assign-subject">
+      <div class="page-title">Assign Subject</div>
+      <div class="page-sub">Map subjects to classes and teachers.</div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="form-group"><div class="form-label">Select Class</div><select class="form-select"><option>Class VI</option><option>Class VII</option><option>Class VIII</option><option>Class IX</option><option>Class X</option></select></div>
+          <div class="form-group"><div class="form-label">Subject Name</div><input class="form-input" placeholder="e.g. Physics"></div>
+          <div class="form-group"><div class="form-label">Subject Code</div><input class="form-input" placeholder="e.g. PHY101"></div>
+          <div class="form-group"><div class="form-label">Subject Teacher</div><select class="form-select"><option>Select Teacher</option><option>Mrs. Sunita Rao</option><option>Mr. Rajesh Kumar</option></select></div>
+          <div class="form-group"><div class="form-label">Periods per Week</div><input class="form-input" type="number" value="5"></div>
+          <div class="form-group"><div class="form-label">Max Marks</div><input class="form-input" type="number" value="100"></div>
+        </div>
+        <div style="margin-top:20px"><button class="btn btn-primary" onclick="showToast('Subject assigned!','success')">✅ Assign</button></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ALL STUDENTS ════════ -->
+    <div class="page" id="page-all-students">
+      <div class="page-title">All Students</div>
+      <div class="page-sub">Manage enrolled students across all classes.</div>
+      <div class="card">
+        <div class="table-controls">
+          <div class="table-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search students..." oninput="filterTable(this,'students-tbody')"></div>
+          <select class="form-select" style="width:auto;padding:8px 12px"><option>All Classes</option><option>Class VI</option><option>Class VII</option><option>Class VIII</option><option>Class IX</option><option>Class X</option></select>
+          <button class="btn btn-primary" onclick="navigate('add-student')">+ Add Student</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Student</th><th>Reg No.</th><th>Class</th><th>Gender</th><th>DOB</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="students-tbody"><tr><td colspan="7" style="text-align:center;color:var(--text3)">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ADD STUDENT ════════ -->
+    <div class="page" id="page-add-student">
+      <div class="page-title">Add New Student</div>
+      <div class="page-sub">Complete the admission form with all required details.</div>
+      <div class="card">
+        <div class="pic-upload" onclick="document.getElementById('student-photo-input').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;color:var(--text3)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Upload Photo</span>
+        </div>
+        <input type="file" id="student-photo-input" accept="image/*" style="display:none">
+
+        <form id="add-student-form">
+          <div class="form-section-title">Personal Information</div>
+          <div class="form-grid">
+            <div class="form-group"><div class="form-label">Full Name *</div><input class="form-input" name="name" placeholder="Student full name" required></div>
+            <div class="form-group"><div class="form-label">Registration No. *</div><input class="form-input" name="reg_number" placeholder="Auto-generated"></div>
+            <div class="form-group"><div class="form-label">Class *</div><select class="form-select" name="class"><option value="">Select Class</option><option>Class VI-A</option><option>Class VI-B</option><option>Class VII-A</option><option>Class VIII-A</option><option>Class IX-A</option><option>Class X-A</option></select></div>
+            <div class="form-group"><div class="form-label">Date of Admission</div><input class="form-input" type="date" name="admission_date"></div>
+            <div class="form-group"><div class="form-label">Date of Birth</div><input class="form-input" type="date" name="dob"></div>
+            <div class="form-group"><div class="form-label">Gender</div><select class="form-select" name="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="form-group"><div class="form-label">Blood Group</div><select class="form-select" name="blood_group"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+            <div class="form-group"><div class="form-label">Religion</div><input class="form-input" name="religion" placeholder="e.g. Hindu"></div>
+            <div class="form-group"><div class="form-label">Caste</div><input class="form-input" name="caste" placeholder="e.g. General"></div>
+            <div class="form-group"><div class="form-label">Mobile Number</div><input class="form-input" type="tel" name="mobile" placeholder="+91 00000 00000"></div>
+            <div class="form-group"><div class="form-label">Discount in Fees</div><select class="form-select" name="discount"><option value="">None</option><option>Sibling Discount (10%)</option><option>Merit Scholarship (25%)</option><option>Staff Ward (50%)</option><option>BPL Category (100%)</option></select></div>
+            <div class="form-group"><div class="form-label">Previous School</div><input class="form-input" name="prev_school" placeholder="Previous school name"></div>
+            <div class="form-group full"><div class="form-label">Identification Marks</div><input class="form-input" name="id_marks" placeholder="e.g. Mole on left cheek"></div>
+            <div class="form-group full"><div class="form-label">Address</div><textarea class="form-textarea" name="address" placeholder="Full home address..."></textarea></div>
+            <div class="form-group full"><div class="form-label">Additional Note</div><textarea class="form-textarea" name="note" placeholder="Any additional notes..."></textarea></div>
+          </div>
+
+          <div class="form-section-title">Parent / Guardian Details</div>
+          <div class="form-grid">
+            <div class="form-group"><div class="form-label">Father's Name</div><input class="form-input" name="father_name" placeholder="Father's full name"></div>
+            <div class="form-group"><div class="form-label">Father's Contact</div><input class="form-input" type="tel" name="father_contact" placeholder="+91 00000 00000"></div>
+            <div class="form-group"><div class="form-label">Mother's Name</div><input class="form-input" name="mother_name" placeholder="Mother's full name"></div>
+            <div class="form-group"><div class="form-label">Mother's Contact</div><input class="form-input" type="tel" name="mother_contact" placeholder="+91 00000 00000"></div>
+          </div>
+
+          <div style="margin-top:20px;display:flex;gap:10px">
+            <button type="button" class="btn btn-primary" onclick="Students.save()">✅ Admit Student</button>
+            <button type="button" class="btn btn-outline" onclick="navigate('all-students')">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- ════════ ADMISSION LETTER ════════ -->
+    <div class="page" id="page-admission-letter">
+      <div class="page-title">Admission Letters</div>
+      <div class="page-sub">Generate and print admission letters.</div>
+      <div class="card">
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Reg No.</th><th>Class</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody id="admission-letter-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text3)">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ STUDENT ID CARDS ════════ -->
+    <div class="page" id="page-student-id">
+      <div class="page-title">Student ID Cards</div>
+      <div class="page-sub">Generate printable identity cards.</div>
+      <div class="card">
+        <button class="btn btn-primary" style="margin-bottom:16px" onclick="showToast('Preparing print view...','info')">🖨 Print All</button>
+        <div id="student-id-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
+          <div style="color:var(--text3);font-size:13px">Loading ID cards...</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ════════ PROMOTE STUDENTS ════════ -->
+    <div class="page" id="page-promote-students">
+      <div class="page-title">Promote Students</div>
+      <div class="page-sub">Move students to the next academic class.</div>
+      <div class="card">
+        <div class="form-grid" style="margin-bottom:20px">
+          <div class="form-group"><div class="form-label">From Class</div><select class="form-select"><option>Class IX-A</option><option>Class IX-B</option><option>Class VIII-A</option></select></div>
+          <div class="form-group"><div class="form-label">To Class</div><select class="form-select"><option>Class X-A</option><option>Class X-B</option></select></div>
+          <div class="form-group"><div class="form-label">Academic Year</div><input class="form-input" value="2025-2026"></div>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Students loaded','info')">Load Students</button>
+        <hr class="divider">
+        <div class="table-wrap"><table><thead><tr><th><input type="checkbox" onchange="toggleAll(this)"></th><th>Student</th><th>Roll No</th><th>Total Marks</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" checked></td><td><strong>Rahul Kumar</strong></td><td>01</td><td>456/500</td><td><span class="badge badge-green">Pass</span></td></tr>
+          <tr><td><input type="checkbox" checked></td><td><strong>Priya Sharma</strong></td><td>02</td><td>481/500</td><td><span class="badge badge-green">Pass</span></td></tr>
+          <tr><td><input type="checkbox"></td><td><strong>Amit Verma</strong></td><td>03</td><td>160/500</td><td><span class="badge badge-red">Fail</span></td></tr>
+        </tbody></table></div>
+        <div style="margin-top:16px"><button class="btn btn-success" onclick="showToast('Students promoted!','success')">✅ Promote Selected</button></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ALL EMPLOYEES ════════ -->
+    <div class="page" id="page-all-employees">
+      <div class="page-title">All Employees</div>
+      <div class="page-sub">Manage school staff members.</div>
+      <div class="card">
+        <div class="table-controls">
+          <div class="table-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search employees..." oninput="filterTable(this,'emp-tbody')"></div>
+          <select class="form-select" style="width:auto;padding:8px 12px"><option>All Roles</option><option>Teacher</option><option>Admin</option><option>Support</option></select>
+          <button class="btn btn-primary" onclick="navigate('add-employee')">+ Add Employee</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Employee</th><th>Role</th><th>Contact</th><th>Salary</th><th>Joining</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="emp-tbody"><tr><td colspan="7" style="text-align:center;color:var(--text3)">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ADD EMPLOYEE ════════ -->
+    <div class="page" id="page-add-employee">
+      <div class="page-title">Add New Employee</div>
+      <div class="page-sub">Register a new staff member with full details.</div>
+      <div class="card">
+        <div class="pic-upload" onclick="document.getElementById('employee-photo-input').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;color:var(--text3)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Upload Photo</span>
+        </div>
+        <input type="file" id="employee-photo-input" accept="image/*" style="display:none">
+
+        <form id="add-employee-form">
+          <div class="form-section-title">Professional Details</div>
+          <div class="form-grid">
+            <div class="form-group"><div class="form-label">Full Name *</div><input class="form-input" name="name" required placeholder="Employee full name"></div>
+            <div class="form-group"><div class="form-label">Contact Number</div><input class="form-input" type="tel" name="contact" placeholder="+91 00000 00000"></div>
+            <div class="form-group"><div class="form-label">Employee Role *</div><select class="form-select" name="role"><option value="">Select Role</option><option>Teacher</option><option>Principal</option><option>Vice Principal</option><option>Admin Staff</option><option>Support Staff</option><option>Accountant</option><option>Librarian</option></select></div>
+            <div class="form-group"><div class="form-label">Date of Joining</div><input class="form-input" type="date" name="joining_date"></div>
+            <div class="form-group"><div class="form-label">Monthly Salary (₹)</div><input class="form-input" type="number" name="salary" placeholder="45000"></div>
+            <div class="form-group"><div class="form-label">Supervisor Name</div><input class="form-input" name="supervisor" placeholder="Reporting manager"></div>
+            <div class="form-group"><div class="form-label">PAN Number</div><input class="form-input" name="pan" placeholder="ABCDE1234F"></div>
+            <div class="form-group"><div class="form-label">Email ID</div><input class="form-input" type="email" name="email" placeholder="employee@school.edu"></div>
+            <div class="form-group"><div class="form-label">Experience (Years)</div><input class="form-input" type="number" name="experience" placeholder="5"></div>
+            <div class="form-group"><div class="form-label">Highest Education</div><input class="form-input" name="education" placeholder="e.g. M.Ed, B.Sc"></div>
+          </div>
+          <div class="form-section-title">Personal Details</div>
+          <div class="form-grid">
+            <div class="form-group"><div class="form-label">Date of Birth</div><input class="form-input" type="date" name="dob"></div>
+            <div class="form-group"><div class="form-label">Gender</div><select class="form-select" name="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="form-group full"><div class="form-label">Address</div><textarea class="form-textarea" name="address" placeholder="Residential address..."></textarea></div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px">
+            <button type="button" class="btn btn-primary" onclick="Employees.save()">✅ Add Employee</button>
+            <button type="button" class="btn btn-outline" onclick="navigate('all-employees')">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- ════════ STAFF ID CARDS ════════ -->
+    <div class="page" id="page-staff-id">
+      <div class="page-title">Staff ID Cards</div>
+      <div class="page-sub">Generate printable staff identity cards.</div>
+      <div class="card">
+        <button class="btn btn-primary" style="margin-bottom:16px" onclick="showToast('Printing all IDs','info')">🖨 Print All</button>
+        <div id="staff-id-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
+          <div style="color:var(--text3);font-size:13px">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ════════ JOB LETTER ════════ -->
+    <div class="page" id="page-job-letter">
+      <div class="page-title">Job Letters</div>
+      <div class="page-sub">Generate appointment and confirmation letters.</div>
+      <div class="card">
+        <div class="table-wrap"><table><thead><tr><th>Employee</th><th>Letter Type</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody id="job-letter-tbody"><tr><td colspan="4" style="text-align:center;color:var(--text3)">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ CHART OF ACCOUNTS ════════ -->
+    <div class="page" id="page-chart-accounts">
+      <div class="page-title">Chart of Accounts</div>
+      <div class="page-sub">Overview of all financial accounts.</div>
+      <div class="card">
+        <button class="btn btn-primary" style="margin-bottom:16px" onclick="showToast('Add account','info')">+ Add Account</button>
+        <div class="table-wrap"><table><thead><tr><th>Code</th><th>Account Name</th><th>Type</th><th>Balance</th></tr></thead>
+        <tbody>
+          <tr><td>1001</td><td><strong>Fees Income</strong></td><td><span class="badge badge-green">Income</span></td><td class="c-green">₹4,20,000</td></tr>
+          <tr><td>1002</td><td><strong>Donation Income</strong></td><td><span class="badge badge-green">Income</span></td><td class="c-green">₹50,000</td></tr>
+          <tr><td>2001</td><td><strong>Salary Expense</strong></td><td><span class="badge badge-red">Expense</span></td><td class="c-red">₹1,20,000</td></tr>
+          <tr><td>2002</td><td><strong>Utilities</strong></td><td><span class="badge badge-red">Expense</span></td><td class="c-red">₹18,000</td></tr>
+          <tr><td>3001</td><td><strong>School Bank Account</strong></td><td><span class="badge badge-blue">Asset</span></td><td class="c-blue">₹3,20,000</td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ADD INCOME ════════ -->
+    <div class="page" id="page-add-income">
+      <div class="page-title">Add Income</div>
+      <div class="page-sub">Record a new income transaction.</div>
+      <div class="card">
+        <form id="add-income-form">
+          <div class="form-grid">
+            <div class="form-group"><div class="form-label">Income Title *</div><input class="form-input" name="title" placeholder="e.g. Term Fees Collection" required></div>
+            <div class="form-group"><div class="form-label">Amount (₹) *</div><input class="form-input" type="number" name="amount" placeholder="0.00" required></div>
+            <div class="form-group"><div class="form-label">Income Date</div><input class="form-input" type="date" name="date"></div>
+            <div class="form-group"><div class="form-label">Account</div><select class="form-select" name="account"><option>Fees Income</option><option>Donation Income</option><option>Grant Income</option></select></div>
+            <div class="form-group"><div class="form-label">Payment Method</div><select class="form-select" name="method"><option>Cash</option><option>Bank Transfer</option><option>UPI</option><option>Cheque</option></select></div>
+            <div class="form-group"><div class="form-label">Receipt No.</div><input class="form-input" name="receipt_no" placeholder="Auto-generated"></div>
+            <div class="form-group full"><div class="form-label">Description</div><textarea class="form-textarea" name="description" placeholder="Additional details..."></textarea></div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px">
+            <button type="button" class="btn btn-success" onclick="Accounts.saveIncome()">✅ Record Income</button>
+            <button type="button" class="btn btn-outline">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Income</div>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Title</th><th>Amount</th><th>Method</th></tr></thead>
+        <tbody id="income-recent-tbody"><tr><td colspan="4" style="text-align:center;color:var(--text3)">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ADD EXPENSE ════════ -->
+    <div class="page" id="page-add-expense">
+      <div class="page-title">Add Expense</div>
+      <div class="page-sub">Record a new expense transaction.</div>
+      <div class="card">
+        <form id="add-expense-form">
+          <div class="form-grid">
+            <div class="form-group"><div class="form-label">Expense Title *</div><input class="form-input" name="title" placeholder="e.g. Monthly Salaries" required></div>
+            <div class="form-group"><div class="form-label">Amount (₹) *</div><input class="form-input" type="number" name="amount" placeholder="0.00" required></div>
+            <div class="form-group"><div class="form-label">Expense Date</div><input class="form-input" type="date" name="date"></div>
+            <div class="form-group"><div class="form-label">Account</div><select class="form-select" name="account"><option>Salary Expense</option><option>Utilities</option><option>Maintenance</option><option>Supplies</option></select></div>
+            <div class="form-group"><div class="form-label">Payment Method</div><select class="form-select" name="method"><option>Cash</option><option>Bank Transfer</option><option>Cheque</option></select></div>
+            <div class="form-group"><div class="form-label">Voucher No.</div><input class="form-input" name="voucher_no" placeholder="Auto-generated"></div>
+            <div class="form-group full"><div class="form-label">Description</div><textarea class="form-textarea" name="description" placeholder="Additional details..."></textarea></div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px">
+            <button type="button" class="btn btn-danger" onclick="Accounts.saveExpense()">✅ Record Expense</button>
+            <button type="button" class="btn btn-outline">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Expenses</div>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Title</th><th>Amount</th><th>Method</th></tr></thead>
+        <tbody id="expense-recent-tbody"><tr><td colspan="4" style="text-align:center;color:var(--text3)">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+
+    <!-- ════════ ACCOUNT STATEMENT ════════ -->
+    <div class="page" id="page-account-statement">
+      <div class="page-title">Account Statement</div>
+      <div class="page-sub">Full financial overview and transaction history.</div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-icon bg-green">📈</div><div class="stat-num c-green" id="summary-income">—</div><div class="stat-label">Total Income</div></div>
+        <div class="stat-card"><div class="stat-icon bg-red">📉</div><div class="stat-num c-red" id="summary-expense">—</div><div class="stat-label">Total Expense</div></div>
+        <div class="stat-card"><div class="stat-icon bg-blue">💰</div><div class="stat-num c-blue" id="summary-net">—</div><div class="stat-label">Net Balance</div></div>
+      </div>
+      <div class="card">
+        <div class="table-controls">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <input class="form-input" type="date" style="width:auto">
+            <span style="color:var(--text2);font-size:13px">to</span>
+            <input class="form-input" type="date" style="width:auto">
+            <button class="btn btn-outline" onclick="showToast('Filtering...','info')">Filter</button>
+          </div>
+          <button class="btn btn-primary" onclick="showToast('Generating PDF...','info')">📄 Export PDF</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Date</th><th>Description</th><th>Type</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
+          <tbody id="statement-tbody"><tr><td colspan="6" style="text-align:center;color:var(--text3)">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+  </main><!-- /page-content -->
+</div><!-- /main-wrapper -->
+
+
+<!-- ════════════════════════════════════════════════════════
+     MODAL — Add Fees Particular
+     ════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-add-fee">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Fees Particular</div>
+      <button class="modal-close" onclick="closeModal('modal-add-fee')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full"><div class="form-label">Particular Name</div><input class="form-input" placeholder="e.g. Lab Fee"></div>
+      <div class="form-group"><div class="form-label">Fee Type</div><select class="form-select"><option>Monthly</option><option>Annual</option><option>Term</option><option>One-time</option></select></div>
+      <div class="form-group"><div class="form-label">Amount (₹)</div><input class="form-input" type="number" placeholder="0"></div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px">
+      <button class="btn btn-primary" onclick="closeModal('modal-add-fee');showToast('Fee particular added!','success')">✅ Add</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-add-fee')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     TOAST CONTAINER
+     ════════════════════════════════════════════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SCRIPTS — load as ES modules
+     ════════════════════════════════════════════════════════ -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
