@@ -2,62 +2,52 @@
  * ============================================================
  *  EduCore — App Entry Point
  *  File: js/app.js
- *  Purpose: Bootstrap the app. Import all modules, wire up
- *           global event handlers, check auth, init UI.
- *           This is the ONLY script tag you need in index.html.
+ *
+ *  FIX SUMMARY (Cloudflare Pages compatibility):
+ *  1. All import paths corrected to be relative to js/ folder
+ *  2. Globals assigned to window BEFORE DOMContentLoaded
+ *     so inline onclick handlers in HTML can find them
+ *  3. Removed dependency on inline <script> block in HTML
  * ============================================================
  */
 
-import { navigate, toggleSub, switchTab, showToast, filterTable, toggleAll, initUI } from '../ui.js';
+import { navigate, toggleSub, switchTab, showToast,
+         openModal, closeModal, filterTable, toggleAll, initUI }
+  from './ui.js';
+
 import './dashboard.js';
-import '../students.js';
+import './students.js';
 import './employees.js';
 import './accounts.js';
 
-/* ── EXPOSE GLOBALS FOR INLINE HTML onclick HANDLERS ──────── */
-// (needed since HTML is not bundled — inline onclicks call these)
-window.navigate   = navigate;
-window.toggleSub  = toggleSub;
-window.switchTab  = switchTab;
-window.showToast  = showToast;
-window.filterTable= filterTable;
-window.toggleAll  = toggleAll;
+/* ── ASSIGN GLOBALS IMMEDIATELY (before DOMContentLoaded) ─── */
+// Cloudflare serves ES modules deferred — inline onclick handlers
+// fire before DOMContentLoaded, so globals must exist NOW.
+window.navigate    = navigate;
+window.toggleSub   = toggleSub;
+window.switchTab   = switchTab;
+window.showToast   = showToast;
+window.openModal   = openModal;
+window.closeModal  = closeModal;
+window.filterTable = filterTable;
+window.toggleAll   = toggleAll;
 
-/* ── AUTH GUARD ───────────────────────────────────────────── */
-async function checkAuth() {
-  // Import DB lazily to avoid circular dep
-  const { default: DB } = await import('./db.service.js');
-  try {
-    const session = await DB.getSession();
-    if (!session) {
-      // Redirect to login page if auth required
-      // window.location.href = '/login.html';
-      // For dev: skip auth check
-      console.log('[EduCore] Dev mode: skipping auth check');
-    }
-  } catch {
-    console.log('[EduCore] Auth check skipped (no backend yet)');
-  }
-}
-
-/* ── GLOBAL KEYBOARD SHORTCUTS ────────────────────────────── */
+/* ── KEYBOARD SHORTCUTS ───────────────────────────────────── */
 document.addEventListener('keydown', e => {
-  // Ctrl+K → focus search
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
     e.preventDefault();
-    document.querySelector('.topbar-search')?.click();
+    document.querySelector('.topbar-search')?.focus();
   }
-  // Escape → close open modals
   if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.modal-overlay.open')
+      .forEach(m => m.classList.remove('open'));
   }
 });
 
-/* ── MOBILE SIDEBAR OVERLAY ───────────────────────────────── */
+/* ── MOBILE SIDEBAR ───────────────────────────────────────── */
 function initMobileSidebar() {
-  const sidebar  = document.getElementById('sidebar');
+  const sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
-  // Close sidebar when clicking outside on mobile
   document.addEventListener('click', e => {
     if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
       if (!sidebar.contains(e.target)) sidebar.classList.remove('open');
@@ -69,20 +59,13 @@ function initMobileSidebar() {
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('[EduCore] Initialising...');
 
-  // 1. Init UI (modals, school name, etc.)
   initUI();
-
-  // 2. Check auth
-  await checkAuth();
-
-  // 3. Mobile sidebar
   initMobileSidebar();
 
-  // 4. Navigate to dashboard (triggers loadDashboard via page loader)
+  // Navigate to dashboard — triggers registerPageLoader('dashboard')
   navigate('dashboard');
 
-  // 5. Welcome toast
-  setTimeout(() => showToast('Welcome to EduCore!', 'info'), 600);
+  setTimeout(() => showToast('Welcome to EduCore!', 'info'), 700);
 
   console.log('[EduCore] Ready.');
 });

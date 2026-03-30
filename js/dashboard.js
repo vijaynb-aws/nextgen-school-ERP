@@ -8,7 +8,7 @@
  */
 
 import DB   from './db.service.js';
-import { showToast, formatDate, getInitials, getAvatarStyle, renderBarChart, registerPageLoader } from '../ui.js';
+import { showToast, formatDate, getInitials, getAvatarStyle, renderBarChart, registerPageLoader } from './ui.js';
 
 /* ── LOAD DASHBOARD ───────────────────────────────────────── */
 async function loadDashboard() {
