@@ -14,15 +14,17 @@
 import { navigate, toggleSub, switchTab, showToast,
          openModal, closeModal, filterTable, toggleAll, initUI }
   from './ui.js';
-
+import './db.service.js';
 import './dashboard.js';
 import './students.js';
 import './employees.js';
 import './accounts.js';
 
+
 /* ── ASSIGN GLOBALS IMMEDIATELY (before DOMContentLoaded) ─── */
 // Cloudflare serves ES modules deferred — inline onclick handlers
 // fire before DOMContentLoaded, so globals must exist NOW.
+window.DB = DB;
 window.navigate    = navigate;
 window.toggleSub   = toggleSub;
 window.switchTab   = switchTab;
