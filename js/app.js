@@ -19,7 +19,7 @@ import './dashboard.js';
 import './students.js';
 import './employees.js';
 import './accounts.js';
-
+import './classes.js';
 
 /* ── ASSIGN GLOBALS IMMEDIATELY (before DOMContentLoaded) ─── */
 // Cloudflare serves ES modules deferred — inline onclick handlers
