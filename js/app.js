@@ -14,12 +14,14 @@
 import { navigate, toggleSub, switchTab, showToast,
          openModal, closeModal, filterTable, toggleAll, initUI }
   from './ui.js';
-import './db.service.js';
+
+import DB from './db.service.js';
 import './dashboard.js';
+//import './classes.js';
 import './students.js';
 import './employees.js';
 import './accounts.js';
-import './classes.js';
+
 
 /* ── ASSIGN GLOBALS IMMEDIATELY (before DOMContentLoaded) ─── */
 // Cloudflare serves ES modules deferred — inline onclick handlers
